@@ -119,7 +119,7 @@ def init_database():
     try:
         # Transactions table
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS transactions (
+            CREATE TABLE IF NOT EXISTS Transactions (
                 id VARCHAR(36) PRIMARY KEY,
                 date VARCHAR(10) NOT NULL,
                 category VARCHAR(100) NOT NULL,
@@ -137,7 +137,7 @@ def init_database():
         
         # Budgets table
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS budgets (
+            CREATE TABLE IF NOT EXISTS Budgets (
                 id VARCHAR(36) PRIMARY KEY,
                 category VARCHAR(100) NOT NULL UNIQUE,
                 monthly_limit DECIMAL(10, 2) NOT NULL,
@@ -148,7 +148,7 @@ def init_database():
         
         # Categories table
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS categories (
+            CREATE TABLE IF NOT EXISTS Categories (
                 id VARCHAR(36) PRIMARY KEY,
                 name VARCHAR(100) NOT NULL UNIQUE,
                 type VARCHAR(10) NOT NULL,
@@ -206,7 +206,7 @@ async def backup(data: BackupData):
         # Backup transactions
         for trans in data.transactions:
             cursor.execute('''
-                REPLACE INTO transactions 
+                REPLACE INTO Transactions 
                 (id, date, category, type, amount, description, created_at, updated_at, synced)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             ''', (
@@ -218,7 +218,7 @@ async def backup(data: BackupData):
         # Backup budgets
         for budget in data.budgets:
             cursor.execute('''
-                REPLACE INTO budgets 
+                REPLACE INTO Budgets 
                 (id, category, monthly_limit, created_at, updated_at)
                 VALUES (%s, %s, %s, %s, %s)
             ''', (
@@ -229,7 +229,7 @@ async def backup(data: BackupData):
         # Backup categories
         for cat in data.categories:
             cursor.execute('''
-                INSERT INTO categories 
+                INSERT INTO Categories 
                 (id, name, type, icon, created_at)
                 VALUES (%s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
@@ -271,15 +271,15 @@ async def restore():
     
     try:
         # Fetch transactions
-        cursor.execute("SELECT * FROM transactions ORDER BY date DESC")
+        cursor.execute("SELECT * FROM Transactions ORDER BY date DESC")
         transactions = cursor.fetchall()
         
         # Fetch budgets
-        cursor.execute("SELECT * FROM budgets")
+        cursor.execute("SELECT * FROM Budgets")
         budgets = cursor.fetchall()
         
         # Fetch categories
-        cursor.execute("SELECT * FROM categories")
+        cursor.execute("SELECT * FROM Categories")
         categories = cursor.fetchall()
         
         logger.info(f"Restore successful: {len(transactions)} transactions, "
