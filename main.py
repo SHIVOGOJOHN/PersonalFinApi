@@ -137,7 +137,7 @@ def init_database():
         
         # Budgets table
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS Budgets (
+            CREATE TABLE IF NOT EXISTS budgets (
                 id VARCHAR(36) PRIMARY KEY,
                 category VARCHAR(100) NOT NULL UNIQUE,
                 monthly_limit DECIMAL(10, 2) NOT NULL,
@@ -148,7 +148,7 @@ def init_database():
         
         # Categories table
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS Categories (
+            CREATE TABLE IF NOT EXISTS categories (
                 id VARCHAR(36) PRIMARY KEY,
                 name VARCHAR(100) NOT NULL UNIQUE,
                 type VARCHAR(10) NOT NULL,
@@ -218,7 +218,7 @@ async def backup(data: BackupData):
         # Backup budgets
         for budget in data.budgets:
             cursor.execute('''
-                REPLACE INTO Budgets 
+                REPLACE INTO budgets 
                 (id, category, monthly_limit, created_at, updated_at)
                 VALUES (%s, %s, %s, %s, %s)
             ''', (
@@ -229,7 +229,7 @@ async def backup(data: BackupData):
         # Backup categories
         for cat in data.categories:
             cursor.execute('''
-                INSERT INTO Categories 
+                INSERT INTO categories 
                 (id, name, type, icon, created_at)
                 VALUES (%s, %s, %s, %s, %s)
                 ON DUPLICATE KEY UPDATE
@@ -275,11 +275,11 @@ async def restore():
         transactions = cursor.fetchall()
         
         # Fetch budgets
-        cursor.execute("SELECT * FROM Budgets")
+        cursor.execute("SELECT * FROM budgets")
         budgets = cursor.fetchall()
         
         # Fetch categories
-        cursor.execute("SELECT * FROM Categories")
+        cursor.execute("SELECT * FROM categories")
         categories = cursor.fetchall()
         
         logger.info(f"Restore successful: {len(transactions)} transactions, "
